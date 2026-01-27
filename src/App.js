@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { Upload, ChevronDown, Leaf, X, Camera, Loader2, Info, CheckCircle, AlertTriangle } from 'lucide-react';
-const API_BASE = "https://aditto.pythonanywhere.com";
+
 // LSU AgCenter Logo
 const LSU_LOGO = "https://cdne-agc-apps-prod.azureedge.net/assets/images/lsuagLogo/lsuagLogo-border-125.png";
 
@@ -306,9 +306,23 @@ function App() {
   const handleFileSelect = (e) => {
     const file = e.target.files[0];
     if (file) {
+      // Check file size (limit to 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        setError('Image too large! Please use an image smaller than 5MB.');
+        return;
+      }
+      
       const reader = new FileReader();
       reader.onload = (e) => {
-        setImage(e.target.result);
+        const base64 = e.target.result;
+        
+        // Check base64 size (limit to 7MB encoded)
+        if (base64.length > 7 * 1024 * 1024) {
+          setError('Image too large after encoding! Please compress the image or reduce its quality.');
+          return;
+        }
+        
+        setImage(base64);
         setAnalysisData(null);
         setError(null);
       };
@@ -324,13 +338,28 @@ function App() {
     setExpandedCards({});
     
     try {
-      const response = await fetch("${API_BASE}/api/analyze", {
+      // Add timeout to prevent hanging requests
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 60000); // 60 second timeout
+      
+      const response = await fetch("https://aditto.pythonanywhere.com/api/analyze", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json"
+        },
         body: JSON.stringify({
           image: image
-        })
+        }),
+        signal: controller.signal
       });
+
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Server response:', errorText);
+        throw new Error(`Server error ${response.status}: ${response.statusText}`);
+      }
 
       const analysisResult = await response.json();
       
@@ -342,7 +371,13 @@ function App() {
       setExpandedCards({ colorBased: true });
     } catch (err) {
       console.error('Analysis error:', err);
-      setError('Failed to analyze image. Make sure the backend server is running.');
+      if (err.name === 'AbortError') {
+        setError('Request timed out. The image might be too large or complex. Please try a smaller image.');
+      } else if (err.message.includes('Failed to fetch')) {
+        setError('Cannot connect to server. Please check your internet connection or try again later.');
+      } else {
+        setError(`Failed to analyze: ${err.message}`);
+      }
     } finally {
       setIsAnalyzing(false);
     }
@@ -488,7 +523,7 @@ function App() {
                 {image ? (
                   <>
                     <img src={image} alt="Uploaded leaf" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                    <button onClick={() => { setImage(null); setAnalysisData(null); }}
+                    <button onClick={() => { setImage(null); setAnalysisData(null); setError(null); }}
                       style={{
                         position: 'absolute', top: 8, right: 8, width: 28, height: 28, borderRadius: '50%',
                         background: 'rgba(0,0,0,0.6)', border: 'none', cursor: 'pointer',
@@ -542,7 +577,7 @@ function App() {
             {error && (
               <div style={{
                 padding: 14, background: 'rgba(244, 67, 54, 0.15)', borderRadius: 12,
-                border: '1px solid rgba(244, 67, 54, 0.3)', color: '#ff8a80', fontSize: '0.8rem'
+                border: '1px solid rgba(244, 67, 54, 0.3)', color: '#ff8a80', fontSize: '0.8rem', lineHeight: 1.4
               }}>
                 ⚠️ {error}
               </div>
@@ -561,6 +596,7 @@ function App() {
                 <li>Hold camera 6-8 inches away</li>
                 <li>Focus on single leaf</li>
                 <li>Avoid shadows</li>
+                <li>Keep image under 5MB</li>
               </ul>
             </div>
 
