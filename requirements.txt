@@ -4,3 +4,6 @@ gunicorn==21.2.0
 numpy
 opencv-python-headless
 pillow
+scipy
+scikit-image
+scikit-learn
