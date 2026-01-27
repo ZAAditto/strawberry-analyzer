@@ -340,9 +340,9 @@ function App() {
     try {
       // Add timeout to prevent hanging requests
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 60000); // 60 second timeout
+      const timeoutId = setTimeout(() => controller.abort(), 90000); // 90 second timeout (increased for Render free tier cold start)
       
-      const response = await fetch("https://aditto.pythonanywhere.com/api/analyze", {
+      const response = await fetch("https://strawberry-analyzer-rt5w.onrender.com/api/analyze", {
         method: "POST",
         headers: { 
           "Content-Type": "application/json"
@@ -372,9 +372,9 @@ function App() {
     } catch (err) {
       console.error('Analysis error:', err);
       if (err.name === 'AbortError') {
-        setError('Request timed out. The image might be too large or complex. Please try a smaller image.');
+        setError('Request timed out. The server might be starting up (can take 30-50 seconds on first use). Please try again.');
       } else if (err.message.includes('Failed to fetch')) {
-        setError('Cannot connect to server. Please check your internet connection or try again later.');
+        setError('Cannot connect to server. The server might be waking up (takes 30-50s on first use). Please wait and try again.');
       } else {
         setError(`Failed to analyze: ${err.message}`);
       }
@@ -565,7 +565,7 @@ function App() {
                   textTransform: 'uppercase', letterSpacing: '0.5px',
                   boxShadow: isAnalyzing ? 'none' : '0 4px 15px rgba(76, 175, 80, 0.4)'
                 }}>
-                  {isAnalyzing ? (<><Loader2 size={18} className="spin" style={{ animation: 'spin 1s linear infinite' }} /> Analyzing...</>) 
+                  {isAnalyzing ? (<><Loader2 size={18} className="spin" style={{ animation: 'spin 1s linear infinite' }} /> Analyzing... (First use: 30-50s)</>) 
                     : (<><Camera size={18} /> Analyze Leaf</>)}
                 </button>
               )}
@@ -597,6 +597,7 @@ function App() {
                 <li>Focus on single leaf</li>
                 <li>Avoid shadows</li>
                 <li>Keep image under 5MB</li>
+                <li>First use may take 30-50s</li>
               </ul>
             </div>
 
