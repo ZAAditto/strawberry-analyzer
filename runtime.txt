@@ -1,0 +1,11 @@
+python-3.11.0
+```
+
+**Complete file structure for your repo:**
+```
+your-repo/
+├── app.py                          # The Flask app I just wrote
+├── strawberry_leaf_analyzer.py     # Your analyzer class
+├── requirements.txt                # Python dependencies (above)
+├── runtime.txt                     # Python version (above)
+└── README.md                       # Optional documentation
