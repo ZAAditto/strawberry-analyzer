@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/strawberry-analyzer/static/css/main.e6c13ad2.css",
-    "main.js": "/strawberry-analyzer/static/js/main.8d257e2a.js",
+    "main.js": "/strawberry-analyzer/static/js/main.9811d4af.js",
     "static/js/453.871b649b.chunk.js": "/strawberry-analyzer/static/js/453.871b649b.chunk.js",
     "index.html": "/strawberry-analyzer/index.html",
     "main.e6c13ad2.css.map": "/strawberry-analyzer/static/css/main.e6c13ad2.css.map",
-    "main.8d257e2a.js.map": "/strawberry-analyzer/static/js/main.8d257e2a.js.map",
+    "main.9811d4af.js.map": "/strawberry-analyzer/static/js/main.9811d4af.js.map",
     "453.871b649b.chunk.js.map": "/strawberry-analyzer/static/js/453.871b649b.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.e6c13ad2.css",
-    "static/js/main.8d257e2a.js"
+    "static/js/main.9811d4af.js"
   ]
 }
