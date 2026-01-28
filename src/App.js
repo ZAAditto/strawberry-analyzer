@@ -637,7 +637,7 @@ function App() {
         <footer style={{
           textAlign: 'center', marginTop: 32, padding: 16, color: '#5a8a5a', fontSize: '0.75rem'
         }}>
-          Streamlined for Realistic Phone Camera Detection • Focuses on Top Strawberry Issues 🍓
+          All rights reserved @LSUAgCenter • Made For 🍓 Farmers and Researchers.
         </footer>
       </div>
 
